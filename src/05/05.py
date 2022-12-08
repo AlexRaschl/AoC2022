@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 from typing import List, Literal
 from collections import defaultdict
+from time import perf_counter_ns as timestamp_nano
 
 
 class Board:
@@ -14,10 +15,12 @@ class Board:
         self.fill_stacks(lines[:-1])
         self.move_at_once = movertype == '9001'
 
-    def play(self, moves: List[str], debug: bool = False):
+    def play(self, moves: List[str], debug: bool = False) -> str:
         for m in moves:
             self.perform_move(m, debug)
-            print(self)
+            if debug:
+                print(self)
+        return ''.join([s[-1] for s in self.stacks.values()])
 
     def perform_move(self, move: str, debug: bool):
         amt, from_, to = tuple(map(int, re.fullmatch(Board.MOVE_REGEX, move).groupdict().values()))
@@ -49,11 +52,19 @@ class Board:
 
 
 if __name__ == '__main__':
+    start = timestamp_nano()
+
     fp = Path(r'input.txt')
 
     with fp.open() as f:
         playground, moves = f.read().split('\n\n', maxsplit=1)
 
     moves = moves.split('\n')
+    board = Board(playground, movertype='9000')
+    p1 = board.play(moves, debug=True)
     board = Board(playground, movertype='9001')
-    board.play(moves, debug=True)
+    p2 = board.play(moves, debug=True)
+    end = timestamp_nano()
+    print(f"{p1=}")
+    print(f"{p2=}")
+    print(f'time: {(end - start) / 1000:.3f}µs')
