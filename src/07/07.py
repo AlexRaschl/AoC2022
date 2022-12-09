@@ -137,7 +137,7 @@ if __name__ == '__main__':
     with fp.open() as f:
         commands = f.read()
 
-    cli = CLI(debug=True)
+    cli = CLI(debug=False)
     cli.parse_all_commands(commands)
     sizes = CLI.get_flatmap_dir_sizes(cli.root)
     p1 = sum(map(lambda s: s[1], filter(lambda s: s[1] <= 100_000, sizes)))
